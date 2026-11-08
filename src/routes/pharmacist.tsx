@@ -1,0 +1,15 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { AppShell } from "@/components/AppShell";
+import { supabase } from "@/lib/supabase";
+import { useCareSession } from "@/lib/use-care-session";
+
+export const Route = createFileRoute("/pharmacist")({ component: PharmacistPage });
+type Review = { id:string; created_at:string; submitted_by:string; medication_summary:string; risk_flags:string; status:string; reviewer_notes:string|null; };
+function PharmacistPage(){
+ const {user,loading}=useCareSession();const [role,setRole]=useState("patient");const [rows,setRows]=useState<Review[]>([]);const [error,setError]=useState("");const [busy,setBusy]=useState(false);
+ async function load(){if(!supabase || !user)return;const [r,q]=await Promise.all([supabase.from("care_roles").select("role").eq("user_id",user.id).maybeSingle(),supabase.from("pharmacist_reviews").select("id,created_at,submitted_by,medication_summary,risk_flags,status,reviewer_notes").order("created_at",{ascending:false}).limit(100)]);if(r.error){setError(r.error.message);return;}setRole(r.data?.role??"patient");if(q.error){setError(q.error.message);return;}setRows(q.data??[]);}
+ useEffect(()=>{if(user)void load();},[user?.id]);
+ async function update(id:string,status:string){if(!supabase)return;setBusy(true);const {error:e}=await supabase.from("pharmacist_reviews").update({status}).eq("id",id);setBusy(false);if(e)setError(e.message);else void load();}
+ return <AppShell><div className="space-y-5"><h1 className="text-3xl font-semibold">Pharmacist review dashboard</h1><p className="text-inksoft">Review requests are private, role-restricted and require a verified pharmacist role assigned by an administrator.</p>{loading?<p>Checking session…</p>:!user?<p><Link to="/auth" className="underline">Sign in</Link> to continue.</p>:role!=="pharmacist"&&role!=="admin"?<p className="rounded-lg bg-panel p-5">Your account does not yet have pharmacist access. Professional permissions require approval. <Link to="/pharmacist-access" className="text-brand underline">Apply as a pharmacist or check application status</Link>.</p>:<><p>{rows.length} review requests</p>{rows.map(r=><section key={r.id} className="rounded-xl bg-panel p-5 space-y-2"><p className="text-xs text-inksoft">{new Date(r.created_at).toLocaleString()} · Status: {r.status}</p><p className="font-semibold">Medications: {r.medication_summary}</p><p className="text-risk">Safety flags: {r.risk_flags}</p><p className="text-xs text-inksoft">Submitted by account {r.submitted_by.slice(0,8)}…</p><div className="flex gap-3"><button disabled={busy} onClick={()=>void update(r.id,"in_review")} className="underline">Mark in review</button><button disabled={busy} onClick={()=>void update(r.id,"completed")} className="underline">Mark completed</button></div></section>)}{rows.length===0&&<p className="text-inksoft">No submitted requests yet. This dashboard does not automatically share patient data.</p>}</>}{error&&<p role="alert" className="text-risk">{error}</p>}</div></AppShell>;
+}

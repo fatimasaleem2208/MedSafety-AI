@@ -1,0 +1,157 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * MedSafety AI — "Instrument console" design system.
+ * Dark clinical console: teal brand, panel surfaces, semantic severity tokens.
+ * All colors are oklch. Never hardcode colors in components.
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+
+  --font-sans: var(--font-display);
+  --font-mono: var(--font-code);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+
+  /* brand + console surfaces */
+  --color-brand: var(--brand);
+  --color-brand-deep: var(--brand-deep);
+  --color-seam: var(--seam);
+  --color-panel: var(--panel);
+  --color-panel2: var(--panel2);
+  --color-ink: var(--ink);
+  --color-inksoft: var(--inksoft);
+
+  /* severity */
+  --color-safe: var(--safe);
+  --color-caution: var(--caution);
+  --color-risk: var(--risk);
+
+  --color-chart-1: var(--brand);
+  --color-chart-2: var(--safe);
+  --color-chart-3: var(--caution);
+  --color-chart-4: var(--risk);
+  --color-chart-5: var(--inksoft);
+
+  --color-sidebar: var(--panel);
+  --color-sidebar-foreground: var(--ink);
+  --color-sidebar-primary: var(--brand);
+  --color-sidebar-primary-foreground: var(--seam);
+  --color-sidebar-accent: var(--panel2);
+  --color-sidebar-accent-foreground: var(--ink);
+  --color-sidebar-border: var(--border);
+  --color-sidebar-ring: var(--brand);
+}
+
+:root {
+  --radius: 0.75rem;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-code: "IBM Plex Mono", ui-monospace, monospace;
+
+  --seam: oklch(0.35 0.017 231);
+  --panel: oklch(0.24 0.015 235);
+  --panel2: oklch(0.285 0.016 235);
+  --ink: oklch(0.938 0.006 220);
+  --inksoft: oklch(0.727 0.019 222);
+  --brand: oklch(0.646 0.081 187);
+  --brand-deep: oklch(0.5 0.072 187);
+  --safe: oklch(0.727 0.107 160);
+  --caution: oklch(0.774 0.13 79);
+  --risk: oklch(0.652 0.152 29);
+
+  --background: oklch(0.27 0.016 233);
+  --foreground: var(--ink);
+  --card: var(--panel);
+  --card-foreground: var(--ink);
+  --popover: var(--panel);
+  --popover-foreground: var(--ink);
+  --primary: var(--brand);
+  --primary-foreground: oklch(0.24 0.015 235);
+  --secondary: var(--panel2);
+  --secondary-foreground: var(--ink);
+  --muted: var(--panel2);
+  --muted-foreground: var(--inksoft);
+  --accent: var(--panel2);
+  --accent-foreground: var(--ink);
+  --destructive: var(--risk);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.938 0.006 220 / 12%);
+  --input: oklch(0.938 0.006 220 / 16%);
+  --ring: var(--brand);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-display);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background-color: color-mix(in oklab, var(--brand) 40%, transparent);
+  }
+}
+
+@utility label-mono {
+  font-family: var(--font-code);
+  font-size: 10px;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--inksoft);
+}
+
+@utility panel-card {
+  border-radius: var(--radius-lg);
+  background-color: var(--panel);
+  box-shadow: 0 0 0 1px oklch(0.938 0.006 220 / 10%);
+}
+
+@keyframes mg-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@utility rise {
+  animation: mg-rise 0.55s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
