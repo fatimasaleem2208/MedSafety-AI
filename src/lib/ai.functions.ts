@@ -127,7 +127,7 @@ async function callGateway(body: { model: string; messages: unknown[] }, apiKey:
 }
 
 export const askAssistant = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => ChatInput.parse(input))
+  .validator((input: unknown) => ChatInput.parse(input))
   .handler(async ({ data }) => {
     const geminiKey = process.env["GEMINI_API_KEY"];
     const openAIKey = process.env["OPENAI_API_KEY"];
@@ -163,7 +163,7 @@ const ExtractInput = z.object({
 });
 
 export const extractDocument = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => ExtractInput.parse(input))
+  .validator((input: unknown) => ExtractInput.parse(input))
   .handler(async ({ data }) => {
     const geminiKey = process.env["GEMINI_API_KEY"];
     const openAIKey = process.env["OPENAI_API_KEY"];
